@@ -1,0 +1,22 @@
+name: Build and Release Proxy
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+            dotnet-version: 8.x
+      - name: Publish GrpcBotProxy
+        run: dotnet publish GrpcHost/GrpcHost.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o publish/
+      - name: Upload Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: publish/GrpcHost.exe
